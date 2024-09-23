@@ -11,8 +11,8 @@ export class ProducerService {
   private readonly logger = new Logger(ProducerService.name);
 
   constructor() {
-    this.sqsClient = new SQSClient({ region: process.env.REGION }); // AWS region
-    this.queueUrl = process.env.TEST_QUEUE; // AWS SQS URL
+    this.sqsClient = new SQSClient({ region: process.env.REGION });
+    this.queueUrl = process.env.TEST_QUEUE;
   }
 
   private readonly consumerServiceUrl = 'http://localhost:3009';
