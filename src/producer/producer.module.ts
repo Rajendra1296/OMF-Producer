@@ -3,10 +3,6 @@ import { ProducerController } from './producer.controller';
 import { ProducerService } from './producer.service';
 import { SqsModule } from '@ssut/nestjs-sqs';
 
-// @Module({
-//   controllers: [ProducerController],
-//   providers: [ProducerService]
-// })
 @Module({
   imports: [
     SqsModule.register({

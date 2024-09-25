@@ -1,5 +1,5 @@
 export class Status {
-  ACTIVE = 'active';
+  CREATED = 'created';
   UPDATED = 'updated';
   BLOCKED = 'blocked';
 }

@@ -1,6 +1,5 @@
 import { IsDateString, IsNotEmpty, IsString } from 'class-validator';
 
-// import { Status } from './Status.model';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateUserDto {
@@ -16,11 +15,6 @@ export class UpdateUserDto {
   @IsString()
   @IsNotEmpty({ message: 'add lastName ,its mandatory  ' })
   lastName?: string;
-  //   @ApiProperty({ description: 'Email Address' })
-  //   @IsEmail({}, { message: 'Invalid email address' })
-  //   @IsNotEmpty({ message: 'Email Address is mandatory' })
-  //   @Column({ unique: true })
-  //   email: string;
 
   @ApiProperty({ description: 'Date of Birth' })
   @IsDateString({}, { message: 'Invalid Date of Birth format' })
