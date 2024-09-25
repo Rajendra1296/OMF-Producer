@@ -17,7 +17,7 @@ export class ProducerService {
 
   private readonly consumerServiceUrl = 'http://localhost:3009';
 
-  async sendMessage(createUserDto: CreateUserDto) {
+  async CreateUser(createUserDto: CreateUserDto) {
     const messageBody = {
       operation: 'create',
       user: {
@@ -31,54 +31,42 @@ export class ProducerService {
       messageBody.user.email,
       messageBody.user.dob,
     );
-    if (User == 'User not found') {
-      const command = new SendMessageCommand({
-        QueueUrl: this.queueUrl,
-        MessageBody: JSON.stringify(messageBody),
-      });
-
-      await this.sqsClient.send(command);
-      this.logger.log(messageBody);
-      return `User ${messageBody.user.firstName} have been created an account`;
+    if (User == 'False') {
+      const UserCreation = await this.SendMessageToSQS(messageBody);
+      return UserCreation;
     } else {
       this.logger.log(
-        'There is a user with the email that has been entered plz try wit h different mail',
+        `There is a user with the email ${messageBody.user.email} , plz try wit h different mail`,
       );
-      return 'User already exists plz check your id through getID or There is a user with the email that has been entered plz try wit h different mail';
+      return `An User already exists with the mail  ${messageBody.user.email} plz check your details through getID orelse  plz try with different mail`;
     }
   }
-  async sendMessageUpdate(updateUserDto: UpdateUserDto) {
-    const messageBody = {
-      operation: 'update',
-      user: {
-        id: updateUserDto.id,
-        firstName: updateUserDto.firstName,
-        lastName: updateUserDto.lastName,
-        dob: updateUserDto.dob,
-      },
-    };
-    const User = await this.getUserDetails(messageBody.user.id);
-    if (User.user.status.S === 'blocked') {
-      this.logger.warn(
-        `User ${User.user.id} is blocked and cannot be updated.`,
-      );
-      return 'User is blocked contact admin for activating the user';
-    } else {
-      const command = new SendMessageCommand({
-        QueueUrl: this.queueUrl,
-        MessageBody: JSON.stringify(messageBody),
-      });
-
-      await this.sqsClient.send(command);
-      this.logger.log(messageBody);
-      return 'User updated successfully';
+  async UpdateUser(updateUserDto: UpdateUserDto) {
+    try {
+      const messageBody = {
+        operation: 'update',
+        user: {
+          id: updateUserDto.id,
+          firstName: updateUserDto.firstName,
+          lastName: updateUserDto.lastName,
+          dob: updateUserDto.dob,
+        },
+      };
+      const User = await this.getUserDetails(messageBody.user.id);
+      if (User.user.status.S === 'blocked') {
+        this.logger.warn(
+          `User ${User.user.id} is blocked and cannot be updated.`,
+        );
+        return ` ${User.user.firstName} is blocked and cannot be updated , contact admin for activating the user`;
+      } else {
+        const UserUpdate = await this.SendMessageToSQS(messageBody);
+        return UserUpdate;
+      }
+    } catch (error) {
+      this.logger.error(`Failed to update the user details: ${error.message}`);
+      return 'User not found please check the id u have entered you have entered';
     }
   }
-  // catch (error) {
-  //     this.logger.error(`Failed to update the user details: ${error.message}`);
-  //     return 'User not found please check the id u have entered you have entered';
-  //   }
-  // }
 
   async getUserStatusAndId(email: string, dob: string) {
     try {
@@ -94,12 +82,11 @@ export class ProducerService {
       return response.data;
     } catch (error) {
       this.logger.error(`Failed to get user details: ${error.message}`);
-      return 'User not found';
+      return 'False';
     }
   }
   async getUserDetails(id: string) {
     try {
-      // Assuming the consumer service is expecting query parameters
       const response = await axios.get(
         `${this.consumerServiceUrl}/consumer/get-user-Details`,
         {
@@ -114,5 +101,15 @@ export class ProducerService {
       this.logger.error(`Failed to get user details: ${error.message}`);
       return 'User not found please check the id you have entered';
     }
+  }
+  async SendMessageToSQS(messageBody) {
+    const command = new SendMessageCommand({
+      QueueUrl: this.queueUrl,
+      MessageBody: JSON.stringify(messageBody),
+    });
+
+    await this.sqsClient.send(command);
+    this.logger.log(messageBody);
+    return `User ${messageBody.user.firstName} have been ${messageBody.operation} successfully`;
   }
 }
