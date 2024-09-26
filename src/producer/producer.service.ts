@@ -11,7 +11,10 @@ export class ProducerService {
   private readonly logger = new Logger(ProducerService.name);
 
   constructor() {
-    this.sqsClient = new SQSClient({ region: process.env.REGION });
+    this.sqsClient = new SQSClient({
+      region: process.env.REGION,
+      endpoint: 'http://localhost:4566',
+    });
     this.queueUrl = process.env.TEST_QUEUE;
   }
 

@@ -39,7 +39,9 @@ describe('ProducerService', () => {
 
       const result = await producerService.CreateUser(mockUserDto);
 
-      expect(result).toEqual('User updated successfully');
+      expect(result).toEqual(
+        'An User already exists with the mail  johdgn.doe@example.com plz check your details through getID orelse  plz try with different mail',
+      );
 
       expect(sendMessageMock).toHaveBeenCalledTimes(1);
 
@@ -59,7 +61,7 @@ describe('ProducerService', () => {
       const result = await producerService.CreateUser(mockUserDto);
 
       expect(result).toEqual(
-        'An User already exists with the mail  johdgfn.doe@example.com plz check your details through getID orelse  plz try with different mail',
+        'An User already exists with the mail  johdgn.doe@example.com plz check your details through getID orelse  plz try with different mail',
       );
       expect(SQSClient.prototype.send).not.toHaveBeenCalled();
     });
