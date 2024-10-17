@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { ProducerService } from './producer.service';
 import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from './DTO/User.dto';
@@ -9,34 +9,37 @@ export class ProducerController {
   constructor(private readonly producerService: ProducerService) {}
 
   @Post('CreateUser')
-  @ApiOperation({ summary: 'CreateUser and post to sqs' })
+  @ApiOperation({
+    summary:
+      'CreateUser function which collects details from user and send to SQS',
+  })
   @ApiBody({
-    description: 'Message of user details to post on sqs',
+    description: 'user details to post on sqs',
     type: CreateUserDto,
   })
-  async SendMessage(@Body() createUserDto: CreateUserDto) {
-    return this.producerService.sendMessage(createUserDto);
+  async CreateUser(@Body() createUserDto: CreateUserDto) {
+    return this.producerService.CreateUser(createUserDto);
   }
-  @Put('update')
-  @ApiOperation({ summary: 'Update Status' })
+  @Put('UpdateUser')
+  @ApiOperation({ summary: 'Update the user details' })
   @ApiBody({
-    description: 'Message to post on sqs',
+    description: 'Message to post on sqs for updating the user',
     type: UpdateUserDto,
   })
-  async updateUser(@Body() updateUserDto: UpdateUserDto) {
-    return this.producerService.sendMessageUpdate(updateUserDto);
+  async UpdateUser(@Body() updateUserDto: UpdateUserDto) {
+    return this.producerService.UpdateUser(updateUserDto);
   }
-  @Get('get-user-status')
+  @Get('get-user-status/:email/:dob')
   @ApiOperation({ summary: 'Get user status and ID by email and DOB' })
   async getUserStatusAndId(
-    @Query('email') email: string,
-    @Query('dob') dob: string,
+    @Param('email') email: string,
+    @Param('dob') dob: string,
   ) {
     return this.producerService.getUserStatusAndId(email, dob);
   }
-  @Get('get-user-details')
+  @Get(`get-user-details/:id`)
   @ApiOperation({ summary: 'Get user status and ID by email and DOB' })
-  async getUserDetails(@Query('id') id: string) {
+  async getUserDetails(@Param('id') id: string) {
     return this.producerService.getUserDetails(id);
   }
 }

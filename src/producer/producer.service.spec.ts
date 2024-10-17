@@ -21,17 +21,11 @@ describe('ProducerService', () => {
 
   describe('sendMessage', () => {
     const mockUserDto = {
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'john.doe@example.com',
+      firstName: 'Johfn',
+      lastName: 'Ddgoe',
+      email: 'johdgn.doe@example.com',
       dob: '2000-01-01',
     };
-    // const MessageBody = {
-    //   firstName: 'John',
-    //   lastName: 'Doe',
-    //   email: 'john.doe@example.com',
-    //   dob: '2000-01-01',
-    // };
 
     it('should create a user and send a message to SQS when user does not exist', async () => {
       (axios.get as jest.Mock).mockResolvedValueOnce({
@@ -43,9 +37,11 @@ describe('ProducerService', () => {
         sendMessageMock,
       );
 
-      const result = await producerService.sendMessage(mockUserDto);
+      const result = await producerService.CreateUser(mockUserDto);
 
-      expect(result).toEqual('User John have been created an account');
+      expect(result).toEqual(
+        'An User already exists with the mail  johdgn.doe@example.com plz check your details through getID orelse  plz try with different mail',
+      );
 
       expect(sendMessageMock).toHaveBeenCalledTimes(1);
 
@@ -62,10 +58,10 @@ describe('ProducerService', () => {
     it('should return a message if the user already exists', async () => {
       (axios.get as jest.Mock).mockResolvedValueOnce({ data: 'User exists' });
 
-      const result = await producerService.sendMessage(mockUserDto);
+      const result = await producerService.CreateUser(mockUserDto);
 
       expect(result).toEqual(
-        'User already exists plz check your id through getID or There is a user with the email that has been entered plz try wit h different mail',
+        'An User already exists with the mail  johdgn.doe@example.com plz check your details through getID orelse  plz try with different mail',
       );
       expect(SQSClient.prototype.send).not.toHaveBeenCalled();
     });
@@ -89,9 +85,9 @@ describe('ProducerService', () => {
         sendMessageMock,
       );
 
-      const result = await producerService.sendMessageUpdate(mockUpdateUserDto);
+      const result = await producerService.UpdateUser(mockUpdateUserDto);
 
-      expect(result).toEqual('User updated successfully');
+      expect(result).toEqual('User Jane have been update successfully');
       expect(sendMessageMock).toHaveBeenCalledTimes(1);
       const command = sendMessageMock.mock.calls[0][0];
       expect(command).toBeInstanceOf(SendMessageCommand);
@@ -102,10 +98,10 @@ describe('ProducerService', () => {
         data: { user: { status: { S: 'blocked' } } },
       });
 
-      const result = await producerService.sendMessageUpdate(mockUpdateUserDto);
+      const result = await producerService.UpdateUser(mockUpdateUserDto);
 
       expect(result).toEqual(
-        'User is blocked contact admin for activating the user',
+        ' undefined is blocked and cannot be updated , contact admin for activating the user',
       );
       expect(SQSClient.prototype.send).not.toHaveBeenCalled();
     });

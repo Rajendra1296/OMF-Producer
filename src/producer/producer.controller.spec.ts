@@ -2,11 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ProducerController } from './producer.controller';
 import { ProducerService } from './producer.service';
 
-// const mockProducerService = () => ({
-//   getUserDetails: jest.fn(),
-//   getUserStatusAndId: jest.fn(),
-// });
-
 const mockID = 'id238ujndm284ye78wdu82';
 const mockEmail = 'rhjsbdj@gkmail.com';
 const mockDOB = '2098-09-07';
@@ -70,7 +65,7 @@ describe('ProducerController', () => {
       });
 
       producerService.sendMessageUpdate.mockResolvedValue('user updated');
-      const result = await controller.updateUser(mockUserDTO);
+      const result = await controller.UpdateUser(mockUserDTO);
       expect(result).toEqual('user updated');
       expect(producerService.sendMessageUpdate).toHaveBeenCalledWith(
         mockUserDTO,
@@ -84,7 +79,7 @@ describe('ProducerController', () => {
       producerService.sendMessageUpdate.mockResolvedValue(
         'User is blocked contact admin for activating the user',
       );
-      const result = await controller.updateUser(mockUserDTO);
+      const result = await controller.UpdateUser(mockUserDTO);
       expect(result).toEqual(
         'User is blocked contact admin for activating the user',
       );
@@ -96,7 +91,7 @@ describe('ProducerController', () => {
 
       producerService.sendMessage.mockResolvedValue('User created');
 
-      const result = await controller.SendMessage(mockUserDTO);
+      const result = await controller.CreateUser(mockUserDTO);
 
       expect(result).toEqual('User omf have been created an account');
       expect(producerService.sendMessage).toHaveBeenCalledWith(mockUserDTO);
